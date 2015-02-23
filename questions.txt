@@ -330,3 +330,84 @@
 				Bounded Waiting does not imply Progress. Even though we have a bound, all processes may be locked up in the enter section <i>(e.g. failure of Progress)</i>
 			</li>
 		</ul>
+
+<w>
+
+	<q>05-Sync-Basics.pdf
+	<q>06-Sync-Soft-Hardware.pdf
+
+
+	<q>Consider the following solution to the critical section problem. The flag[] variable may be REQUESTING, IN_CS and OUT_CS, and the turn variable is initialized to 0 or 1.
+	<a>
+	<pre>
+		int  flag[2];  // shared variable flag[]: REQUESTING, IN_CS, OUT_CS
+		int  turn;     // shared variable: initial value is either 0 or 1
+
+		Process i (i = 0 or 1)
+
+		// Enter Protocol
+		repeat							// repeat the following:
+			flag[i] = REQUESTING;				//   make a request to enter                    
+			while (turn != i && flag[j] != OUT_CS)		//   wait as long as it is not my turn and 
+				; 					//      the other process is not out
+			flag[i] = IN_CS;				//   OK, I am IN_CS (maybe); but,
+		until flag[j] != IN_CS;					// I have to wait until the other is not in
+		turn = i;						// Since the other is not IN, it is my turn
+
+		critical section
+
+		// exit protocol
+		turn = j;						// Yield the CS to the other
+		flag[i] = OUT_CS;					// I am now out of the CS.
+	</pre>
+
+	<q>Show that this solution does satisfy all three conditions (i.e., mutual exclusion, progress, and bounded waiting).</b>
+	<a> answer
+
+
+
+
+	<q>We discussed in class that the simple solution using the atomic TS (i.e., test-and-set) instruction satisfies the mutual exclusion condition. Obviously, it does not satisfy the bounded waiting condition. Does this solution satisfy the progress condition?
+	Consider the following more sophisticated solution using the atomic TS (i.e., test-and-set) instruction. Consider the following more sophisticated solution. Shared variable waiting[] and lock are initialized to FALSE. Note that this solution works for n processes.
+	<a>
+	<pre>
+		boolean waiting[n];    		// shared variable with initial value FALSE
+		boolean lock;          		// shared lock variable with initial value FALSE
+
+		Process i (i = 0, 1, ..., n-1)
+
+		// Enter protocol
+		waiting[i] = TRUE;               // I am waiting to enter
+		key        = TRUE;               // set my local variable key to FALSE
+		while (waiting[i] && key)        // wait and keep trying to
+		   key = TS(&lock);              //    lock the shared lock variable
+		waiting[i] = FALSE;              // no more waiting and I am in.
+
+		critical section     
+
+		// Exit protocol
+		j = (i+1) % n;                   // scan the waiting status of other processes
+		while ((j != i) && !waiting[j])  // loop as long as process j is not waiting
+		   j = (j+1) % n;                //    move to next process
+
+		if (j == i)                      // no one is waiting
+		   lock = FALSE;                 //    set the lock to FALSE
+		else                             // process j is waiting to enter
+		   waiting[j] = FALSE;           //    release j so that it can enter
+	</pre>
+
+	<q>Show that the above solution satisfies the mutual exclusion condition. 
+	(Hint: When does the local variable key to be FALSE?)
+	<a> answer
+
+	<q>Show that the above solution satisfies the progress condition. 
+	(Hint: What are the values of waiting[] and lock that make a process to enter?)
+	<a> answer
+
+	<q>Show that the above solution satisfies the bounded waiting. 
+	(Hint: Examine the exit protocol and find out the meaning of the while loop. Then, show that a waiting process only waits for no more than n rounds.)
+	<a> answer
+
+	<q>If we have such a good solution that satisfies all three conditions, why is the TS instruction implemented this way?
+	(Hint: Think about multiprocessors.)
+	<a> answer
