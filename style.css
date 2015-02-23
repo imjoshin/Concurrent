@@ -1,0 +1,20 @@
+body{
+	width:100%;
+	max-width:800px;
+}
+
+h1:hover{
+	cursor:hand;
+}
+
+.slides{
+	padding-left:20px;
+}
+
+.question{
+	padding-left:20px;
+}
+
+.answer{
+	padding-left:40px;
+}

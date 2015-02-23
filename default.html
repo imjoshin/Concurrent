@@ -1,0 +1,42 @@
+<html>
+<head>
+	<title>Concurrent Computing</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+
+	<script type="text/javascript" src="//code.jquery.com/jquery-1.10.2.js"></script>
+	<script type="text/javascript" src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+
+
+	<script>
+	$(document).ready(function(){
+
+		$.ajax({
+			type: 'POST',
+			url: 'questions.php',
+			async: false,
+			success: function(output){
+				$("#content").html(output);
+			},
+			error: function(output){
+				$("#content").html(output);
+				alert("An error occured. Please refresh the page.\n\nIf the issue persists, please contact Josh Johnson (jocjohns@mtu.edu).");
+			}
+		});
+
+		$("h1").on("click", function(){
+			var div = $("div[data-num='" + $(this).data("num") + "']");
+			if(div.is(":visible"))
+				div.slideUp(300);
+			else
+				div.slideDown(300);
+		})
+
+	});
+	</script>
+
+</head>
+
+<body>
+	<div id="content"></div>
+</body>
+</html>
