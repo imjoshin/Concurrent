@@ -2,6 +2,9 @@
 <head>
 	<title>Concurrent Computing</title>
 	<link rel="stylesheet" type="text/css" href="style.css">
+	<link rel="stylesheet" type="text/css" href="assets/css/normalize.css">
+	<link rel="stylesheet" type="text/css" href="assets/css/foundation.min.css">
+	<link rel="stylesheet" type="text/css" href="assets/css/font-awesome.css">
 
 	<script type="text/javascript" src="//code.jquery.com/jquery-1.10.2.js"></script>
 	<script type="text/javascript" src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
@@ -24,12 +27,17 @@
 		});
 
 		$("h1").on("click", function(){
+			var minus = "fa-minus-square-o"; var plus = "fa-plus-square-o";
 			var div = $("div[data-num='" + $(this).data("num") + "']");
-			if(div.is(":visible"))
+			if(div.is(":visible")) {
 				div.slideUp(300);
-			else
+				$(this).find(".fa").removeClass(minus).addClass(plus);
+			}
+			else {
 				div.slideDown(300);
-		})
+				$(this).find(".fa").removeClass(plus).addClass(minus);
+			}
+		});
 
 	});
 	</script>
@@ -37,6 +45,6 @@
 </head>
 
 <body>
-	<div id="content"></div>
+	<div id="content" class="row"></div>
 </body>
 </html>
