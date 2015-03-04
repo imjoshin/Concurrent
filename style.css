@@ -1,10 +1,10 @@
-body{
-	width:100%;
-	max-width:800px;
-}
-
 h1:hover{
 	cursor:hand;
+}
+
+h1 .fa {
+  font-size: 50%;
+  vertical-align: middle;
 }
 
 .slides{
