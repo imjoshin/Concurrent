@@ -39,12 +39,46 @@
 			}
 		});
 
+		$("#exam2").on("click", function(){
+			var minus = "fa-minus-square-o"; var plus = "fa-plus-square-o";
+			var fa = $("h1[data-num='" + $(this).data("num") + "']").find(".fa");
+			$('.week').each(function(){
+				if(parseInt($(this).data('num')) <= 6){	
+					$(this).slideUp(300);
+					fa.removeClass(minus).addClass(plus);
+				}
+				else{
+					$(this).slideDown(300);
+					fa.removeClass(plus).addClass(minus);
+				}
+			});
+		});
+
+		$("#exam1").on("click", function(){
+			var minus = "fa-minus-square-o"; var plus = "fa-plus-square-o";
+			var fa = $("h1[data-num='" + $(this).data("num") + "']").find(".fa");
+			$('.week').each(function(){
+				if(parseInt($(this).data('num')) >= 7){	
+					$(this).slideUp(300);
+					fa.removeClass(minus).addClass(plus);
+				}
+				else{
+					$(this).slideDown(300);
+					fa.removeClass(plus).addClass(minus);
+				}
+			});
+		});
+
 	});
 	</script>
 
 </head>
 
 <body>
+	<div id="shorts" class="row">
+		<input type="button" id="exam1" value="Exam 1">
+		<input type="button" id="exam2" value="Exam 2">
+	</div>
 	<div id="content" class="row"></div>
 </body>
 </html>

@@ -411,3 +411,153 @@
 	<q>If we have such a good solution that satisfies all three conditions, why is the TS instruction implemented this way?
 	(Hint: Think about multiprocessors.)
 	<a> answer
+
+<w>
+
+<w>
+	<q>07-Some-Cpp-TM.pdf
+	<q>08-Semaphores.pdf
+
+	<q>In the definition of a semaphore, the counter and waiting list are private members, and, as a result, it is impossible 
+		to know the current value of the counter. Suppose a public member function GetCounter() is added, and suppose this 
+		member function, just like the Signal() and Wait() functions, is also atomic. If the counter value is negative, its 
+		absolute value is the number of processes in the waiting list. Discuss the accuracy of the returned value by member 
+		function GetCounter(). In other word, is it always the case that the returned value provides an accurate count of 
+		waiting processes?
+	<a> answer
+
+	<q>Show, by an execution sequence, that if the method Wait() is not atomic (but the method Signal() is) then mutual exclusion cannot be guaranteed by the use of a semaphore.
+	<a> answer
+
+
+	<q>Show, by an execution sequence, that if the method Signal() is not atomic (but the method Wait() is) then mutual exclusion cannot be guaranteed by the use of a semaphore.
+	<a> answer
+
+	<q>Suppose we have three processes <i>P</i><sub>1</sub>, <i>P</i><sub>2</sub> and <i>P</i><sub>3</sub> and process <i>P</i><sub>i</sub> only prints the value of <i>i</i> as follows:
+	</b>
+	<pre>
+	Process 1
+	while(1) {
+		...
+		count << "1";
+		...
+	}
+
+	Process 2
+	while(1) {
+		...
+		count << "2";
+		...
+	}
+
+	Process 3
+	while(1) {
+		...
+		count << "3";
+		...
+	}
+	</pre>
+	<b>
+	Add semaphores and cout if necessary to the above processes so that the three processes will print out the following sequence 1 2 3 2 1 2 3 2 1 2 3 2 1 ...
+	<a> answer
+
+	<q>We know that a semaphore with an appropriate initial value can guarantee mutual exclusion. Does the semaphore solution satisfy the progress condition and the bounded waiting condition? Use execution sequences to answer this question.
+	<a> answer
+
+	<q>Use the Test-and-Set instruction to implement semaphore wait and semaphore signal.
+	<a> answer
+
+	<q>It was shown in class that deadlocks can occur in the naive solution to the dining philosophers problem. We also showed that to avoid deadlocks from happening a righty philosopher may be introduced or add a restriction that at most four philosophers may sit down and eat. Do the following problems:
+	<a>
+
+		<ul>
+			<li>
+				Rigorously prove that the righty solution does not cause any deadlock.
+			</li>
+			<li>
+				Rigorously prove that the four-chair solution does not cause any deadlocks.
+			</li>
+			<li>
+				Show, with execution sequences, that the naive, righty and four-chair solutions can have starvation. More precisely, use execution sequences to show that there are philosophers who are hungry and have no chance to eat.
+			</li>
+		</ul>
+
+	<q>It was suggested that to avoid possible deadlocks in the philosophers problem one may add more resources which should be arranged in a different way. The following shows some attempts:
+	</b>	<ul>
+			<li>
+				Add a single chopstick at the center of the table. A philosopher picks up his left chopstick and then competes to grab the chopstick at the center. If he can get both, then he eats.
+				<ul>
+					<li>Does this approach avoid any possible deadlock?</li>
+					<li>Any bad consequence that attempt could have such as maximum parallelism?</li>
+					<li>With semaphores, is it possible to implement the following protocol? Why?</li>
+					<ul>
+						<li>Each philosopher picks up his left chopstick.</li>
+						<li>If he fails to do so, then try to get the center one. Otherwise, he waits until his left chopstick becomes available.</li>
+						<li>Do the same for his right chopstick.</li>
+					</ul>
+					<li>Discuss the efficiency and deadlock issues of this "suggested" solution.</li>
+				</ul>
+			</li>
+			<li>
+				Instead of having the chopsticks arranged as discussed in class, we make all five chopsticks in a tray next to the table so that any philosopher can pick any chopstick. In this attempt, each philosopher picks up his first chopstick, and, then picks the second. Is deadlock possible? How about parallelism?
+			</li>
+		</ul>
+	<b>
+	<a> answer
+
+
+	<q>We discussed in class that the waiting processes on a semaphore should be better considered as a set (with any ordering) rather than a queue. As a result, there is no particular order when releasing a waiting process, and starvation could occur. On the other hand, with multiple semaphores we are able to come up with a starvation-free solution to the critical section problem.
+	</b> The following solution, due to Morris (1979), uses three semaphores. Semaphores <b>FirstBarrier</b> and <b>SecondBarrier</b> are used to setup two barriers, and semaphore Lock is used to protect counter <b>FirstCount</b> for mutual exclusion purpose. Two counters are used: <b>FirstCount</b> counts the number of processes ready to cross the first barrier represented by semaphore <b>FirstBarrier</b>, and <b>SecondCount</b> counts the number of processes having already crossed the first barrier but not barrier <b>SecondBarrier</b>.
+	<pre>
+	Semaphore:  	FirstBarrier    = 1,
+            		SecondBarrier   = 0,
+            		Lock            = 1;
+
+			int         FirstCount      = 0,
+            		SecondCount     = 0;
+	</pre>
+	The following shows the enter and exit protocol:
+	<pre>
+	// Enter Protocol
+
+	Wait(Lock);                                 // I am ready and prepared to cross the 1st barrier
+    		FirstCount++;                       // increase the counter
+	Signal(Lock);
+
+	Wait(FirstBarrier);                         // wait on the 1st barrier
+     		SecondCount++;                      // I have successfully crossed the 1st barrier
+     		Wait(Lock);                         // Have to lock the counter to decrease
+          	FirstCount--;                       // Now I am about to cross the 2nd barrier
+          	if (FirstCount == 0) {              // if I was the only one crossing the 1st barrier
+               		Signal(Lock);               //     then release the lock
+               		Signal(SecondBarrier);      //     and signal the 2nd barrier so that I could cross
+         	}
+          	else {                              // if I am not the only one, I have to wait; but
+               		Signal(Lock);               //     I have to release the lock, and
+               		Signal(FirstBarrier);       //     also open the 1st barrier
+          	}
+	Wait(SecondBarrier);                        // wait on the second barrier
+	SecondCount--;                              // I am no more waiting to cross the 2nd barrier
+
+// in critical section 
+
+// Exit protocol
+
+	if (SecondCount == 0)                       // if there is no one wait on the 2nd barrier
+     		Signal(FirstBarrier);               //     open the 1st barrier
+	else					    // otherwise,
+     		Signal(SecondBarrier);              //     open the 2nd barrier
+
+	</pre>
+	<b>Try to understand the above protocol, and convince yourself that mutual exclusion and bounded-waiting are satisfied. How about the progress condition?
+
+	<a> answer
+
+
+
+
+
+<w>
+
+	<q>08-Semaphores.pdf
+	<q>09-Race-Conditions.pdf
