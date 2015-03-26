@@ -413,6 +413,8 @@
 	<a> answer
 
 <w>
+	<q>06-Sync-Soft-Hardware.pdf
+	<q>07-Some-Cpp-TM.pdf
 
 <w>
 	<q>07-Some-Cpp-TM.pdf
@@ -422,16 +424,99 @@
 		to know the current value of the counter. Suppose a public member function GetCounter() is added, and suppose this 
 		member function, just like the Signal() and Wait() functions, is also atomic. If the counter value is negative, its 
 		absolute value is the number of processes in the waiting list. Discuss the accuracy of the returned value by member 
-		function GetCounter(). In other word, is it always the case that the returned value provides an accurate count of 
+		function GetCounter(). In other words, is it always the case that the returned value provides an accurate count of 
 		waiting processes?
-	<a> answer
+	<a> Due to the fact that GetCounter() is atomic, along with Signal() and Wait(), only one of these functions may be run at a single time. Therefore, GetCounter() will always return an accurate value of the current counter.
 
 	<q>Show, by an execution sequence, that if the method Wait() is not atomic (but the method Signal() is) then mutual exclusion cannot be guaranteed by the use of a semaphore.
-	<a> answer
-
+	<a>
+	<table style="width:500px">
+		<tr>
+			<th style="width:150px">Thread 1</th>
+			<th style="width:150px">Thread 2</th>
+			<th style="width:200px">Comment</th>
+		</tr>
+		<tr>
+			<td>stuff</td>
+			<td>stuff</td>
+			<td>count is 0</td>
+		</tr>
+		<tr>
+			<td>Wait() is called</td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>I</td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>Will</td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>Do</td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>This</td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>Later</td>
+			<td></td>
+			<td></td>
+		</tr>
+	</table>
 
 	<q>Show, by an execution sequence, that if the method Signal() is not atomic (but the method Wait() is) then mutual exclusion cannot be guaranteed by the use of a semaphore.
-	<a> answer
+	<a> 
+	<table style="width:500px">
+		<tr>
+			<th style="width:150px">Thread 1</th>
+			<th style="width:150px">Thread 2</th>
+			<th style="width:200px">Comment</th>
+		</tr>
+		<tr>
+			<td>stuff</td>
+			<td>stuff</td>
+			<td>count is 0</td>
+		</tr>
+		<tr>
+			<td>Wait() is called</td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>I</td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>Will</td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>Do</td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>This</td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>Later</td>
+			<td></td>
+			<td></td>
+		</tr>
+	</table>
 
 	<q>Suppose we have three processes <i>P</i><sub>1</sub>, <i>P</i><sub>2</sub> and <i>P</i><sub>3</sub> and process <i>P</i><sub>i</sub> only prints the value of <i>i</i> as follows:
 	</b>
@@ -439,26 +524,29 @@
 	Process 1
 	while(1) {
 		...
-		count << "1";
+		cout << "1";
 		...
 	}
 
 	Process 2
 	while(1) {
 		...
-		count << "2";
+		cout << "2";
 		...
 	}
 
 	Process 3
 	while(1) {
 		...
-		count << "3";
+		cout << "3";
 		...
 	}
 	</pre>
 	<b>
 	Add semaphores and cout if necessary to the above processes so that the three processes will print out the following sequence 1 2 3 2 1 2 3 2 1 2 3 2 1 ...
+	<a> answer
+
+	<q>Modify the above template so that it will print out the following sequence 1 2 3 1 2 3 1 2 3 1 2 3 ...
 	<a> answer
 
 	<q>We know that a semaphore with an appropriate initial value can guarantee mutual exclusion. Does the semaphore solution satisfy the progress condition and the bounded waiting condition? Use execution sequences to answer this question.
@@ -468,19 +556,21 @@
 	<a> answer
 
 	<q>It was shown in class that deadlocks can occur in the naive solution to the dining philosophers problem. We also showed that to avoid deadlocks from happening a righty philosopher may be introduced or add a restriction that at most four philosophers may sit down and eat. Do the following problems:
-	<a>
+	</b>
+	<ul>
+		<li>
+			Rigorously prove that the righty solution does not cause any deadlock.
+		</li>
+		<li>
+			Rigorously prove that the four-chair solution does not cause any deadlocks.
+		</li>
+		<li>
+			Show, with execution sequences, that the naive, righty and four-chair solutions can have starvation. More precisely, use execution sequences to show that there are philosophers who are hungry and have no chance to eat.
+		</li>
+	</ul><b>
 
-		<ul>
-			<li>
-				Rigorously prove that the righty solution does not cause any deadlock.
-			</li>
-			<li>
-				Rigorously prove that the four-chair solution does not cause any deadlocks.
-			</li>
-			<li>
-				Show, with execution sequences, that the naive, righty and four-chair solutions can have starvation. More precisely, use execution sequences to show that there are philosophers who are hungry and have no chance to eat.
-			</li>
-		</ul>
+	<a> answer
+
 
 	<q>It was suggested that to avoid possible deadlocks in the philosophers problem one may add more resources which should be arranged in a different way. The following shows some attempts:
 	</b>	<ul>
@@ -506,18 +596,18 @@
 	<a> answer
 
 
-	<q>We discussed in class that the waiting processes on a semaphore should be better considered as a set (with any ordering) rather than a queue. As a result, there is no particular order when releasing a waiting process, and starvation could occur. On the other hand, with multiple semaphores we are able to come up with a starvation-free solution to the critical section problem.
-	</b> The following solution, due to Morris (1979), uses three semaphores. Semaphores <b>FirstBarrier</b> and <b>SecondBarrier</b> are used to setup two barriers, and semaphore Lock is used to protect counter <b>FirstCount</b> for mutual exclusion purpose. Two counters are used: <b>FirstCount</b> counts the number of processes ready to cross the first barrier represented by semaphore <b>FirstBarrier</b>, and <b>SecondCount</b> counts the number of processes having already crossed the first barrier but not barrier <b>SecondBarrier</b>.
-	<pre>
+	<q>We discussed in class that the waiting processes on a semaphore should be better considered as a set (with any ordering) rather than a queue. As a result, there is no particular order when releasing a waiting process, and starvation could occur. On the other hand, with multiple semaphores we are able to come up with a starvation-free solution to the critical section problem.<br>
+	 The following solution, due to Morris (1979), uses three semaphores. Semaphores FirstBarrier and SecondBarrier are used to setup two barriers, and semaphore Lock is used to protect counter FirstCount for mutual exclusion purpose. Two counters are used: FirstCount counts the number of processes ready to cross the first barrier represented by semaphore FirstBarrier, and SecondCount counts the number of processes having already crossed the first barrier but not barrier SecondBarrier.
+	</b><pre>
 	Semaphore:  	FirstBarrier    = 1,
             		SecondBarrier   = 0,
             		Lock            = 1;
 
 			int         FirstCount      = 0,
             		SecondCount     = 0;
-	</pre>
+	</pre><b>
 	The following shows the enter and exit protocol:
-	<pre>
+	</b><pre>
 	// Enter Protocol
 
 	Wait(Lock);                                 // I am ready and prepared to cross the 1st barrier
