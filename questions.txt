@@ -561,3 +561,240 @@
 
 	<q>08-Semaphores.pdf
 	<q>09-Race-Conditions.pdf
+
+	<q>Suppose the smokers problem is changed to the following version.
+	</b>
+	<ul>
+		<li>There are three semaphores, one for tobacco, one for matches, and one for paper</li>
+		<li>The smoker who has tobacco waits on semaphores matches and paper, the smoker who has matches waits on semaphores tobacco and paper. The smoker who has paper waits on semaphores tobacco and matches.</li>
+		<li>The agent randomly picks up two ingredients and signals the corresponding semaphores.</li>
+		<li>There is a table, of course.</li>
+	</ul><b>
+	Does this version work properly without any problem?
+	<a> answer
+
+	<q>The above more general smoker version is basically due to simultaneously waiting on multiple semaphores. More specifically, simultaneously waiting on multiple semaphores is not atomic. Why?
+	<a> answer
+
+	<q>As you may have noticed that the WrtMutex semaphore is shared by the readers and writers. It blocks no more than one reader and multiple writers (Prove this!). As a result, when an exiting reader or writer signals this semaphore, a reader or a writer could be released. Some argued that this does not satisfy the "reader priority" requirement because there may have already had a reader waiting. Although it is an argument based on when the "reading" starts (i.e., entering at the beginning vs. actual reading), one can certainly improve the situation a little. Here is another reader-priority solution with one added semaphore WriterOnly with initial value 1. The following is the code for writers as readers are not affected:
+
+	</b><pre>Semaphore  WriterOnly = 1; // other semaphores are the same</pre><b>
+	A writer process has the following form:
+	</b><pre>
+
+	while {
+	     Wait(WriterOnly);     // wait on our own semaphore
+	          Wait(WrtMutex);  // then, compete with the only possible reader
+	                           // writing
+	          Signal(WrtMutex);
+	     Signal(WriterOnly);
+	}
+
+	</pre><b>
+
+	Do you think this is a "better" version? In other word, does the only waiting reader on semaphore WrtMutex have more chance to take the priority (i.e., reader-priority)?
+
+	<a> answer
+
+
+
+	<q>Here is another solution.
+	</b><pre>
+
+	int  ActiveReaders = ActiveWriters = 0;
+	int  WaitingReaders = WaitingWriters = 0;
+
+	Semaphore Mutex = 1;       // protecting the above declared counters
+	Semaphore OKtoRead = 0;
+	Semaphore OKtoWrite = 0;
+
+	</pre><b>
+
+	A reader process has the following form:
+	</b><pre>
+
+	while (1) {
+	     Wait(Mutex);                           // the enter part
+	     if (ActiveWriters + ActiveReaders == 0) {  // no one is reading and writing
+	          Signal(OKtoWrite);
+	          ActiveReaders++;                  // I am in
+	     }
+	     else 
+	          WaitingReaders++;                 // otherwise, I must wait
+	     Signal(Mutex);                         // release the counter lock
+
+	     Wait(OKtoRead);                        // wait to get the read permission
+	                                            // read data
+
+	     Wait(Mutex);                           // the exit part
+	     ActiveReaders--;                       // I am done reading
+	     if (ActiveReaders == 0 && WaitingWriters > 0) {
+	          Signal(OKtoWrite);                // allow writing of no reader and some writers
+	          ActiveWriters++;                  // we have an active writer
+	          WaitingWriters--;                 //    and one less waiting writers
+	     }
+	     Signal(Mutex);                         // release the counter
+	}
+
+	</pre><b>
+
+	A writer process has the following form:
+	</b><pre>
+
+	while (1) {
+	     Wait(Mutex);                           // the enter part
+	     if (ActiveWriters + ActiveReaders + WaitingWriters == 0) {  
+	                                            // no one is reading, writing and waiting
+	          Signal(OKtoWrite);
+	          ActiveWriters++;                  // I (writer) am in
+	     }
+	     else 
+	          WaitingWriters++;                 // otherwise, I must wait
+	     Signal(Mutex);                         // release the counter lock
+
+	     Wait(OKtoWrite);                       // wait to get the read permission
+	                                            // write data
+
+	     Wait(Mutex);                           // the exit part
+	     ActiveWriters--;                       // I am done writing
+	     if (WaitingWriters > 0) {              // if there are writers waiting
+	          Signal(OKtoWrite);                // allow writing of no reader and some writers
+	          ActiveWriters++;                  // we have an active writer
+	          WaitingWriters--;                 //    and one less waiting writers
+	     }
+	     else {
+	          while (WaitingReaders > 0) {      // if there are waiting readers
+	             Signal(OKtoRead);              //    let them read one-by-one
+	             ActiveReaders++;
+	             WaitingReaders--;
+	     Signal(Mutex);                         // release the counter
+	}
+
+	</pre><b>
+
+	Study this solution and make sure you understand what it is trying to do. Is this a reader-priority or a writer-priority solution?
+
+	<a> answer
+
+
+	<q>We discussed the reader-priority version of the readers/writers problem. Here is a solution to the writer-priority version of the readers/writers problem in which writers have higher priority. More precisely, as long as there is at least one writer has declared a desire to write, no new readers are allowed to read. Now, a reader process uses three semaphores Block, ReadMutex and ReadCountMutex, and a writer process uses two semaphores WriteMutex and WriteCountMutex:
+
+	</b><pre>
+
+	Semaphore:  Block           = 1,
+            ReadMutex       = 1,
+            ReadCountMutex  = 1,
+            WriteMutex      = 1,
+            WriteCountMutex = 1;
+
+    </pre><b>
+
+    A reader process has the following form:
+
+    </b><pre>
+
+    while {
+	     Wait(Block);
+	          Wait(ReadMutex);
+	               Wait(ReadCountMutex);
+	                    ReadCount++;
+	                    if (ReadCount == 1) 
+	                         Wait(WriteMutex);
+	               Signal(ReadCountMutex);
+	          Signal(ReadMutex);
+	     Signal(Block);
+
+	     ..... read the database .....
+
+	     Wait(ReadCountMutex);
+	          ReadCount--;
+	          if (ReadCount == 0)
+	               Signal(WriteMutex);
+	     Signal(ReadCountMutex);
+	}
+
+	</pre><b>
+
+	A writer process has the following form:
+
+	</b><pre>
+
+	while {
+	     Wait(WriteCountMutex);
+	          WriteCount++;
+	          if (WriteCount == 1)
+	               Wait(ReadMutex);
+	     Signal(WriteCountMutex);
+	     Wait(WriteMutex);
+
+	     ..... write the database .....
+
+	     Signal(WriteMutex);
+	     Wait(WriteCountMutex);
+	          WriteCount--;
+	          if (WriteCount == 0)
+	               Signal(ReadMutex);
+	     Signal(WriteCountMutex);
+	}
+
+	</pre><b>
+
+	The initial values of ReadCount and WriteCount are both 0. Please study this solution and answer the following questions:
+
+	<a>
+
+	<q> 1. What is the purpose of using Wait(Block) and Wait(ReadMutex)? Before proceed to the next question, think again if your point is correct.
+	<a> answer
+
+	<q> 2. You would say "semaphores Block and ReadMutex are used to lock the database." But, if this were true, the database would be accessed by <i>no more than one</i> reader (or one writer). Is this a correct observation? Or, did I fool you with some bad reasoning? Keep in mind that the readers-and-writers problem requires simultaneous read and exclusive write.
+	<a> answer
+
+	<q> 3. Now, tell me why readers can access the database simultaneously.
+	<a> answer
+
+	<q> 4. But, the initial value of Block is 1. This would only allow one reader to access the database. If this is the case, why don't we change:
+	</b><pre>
+
+	while {
+	     Wait(Block);
+	          Wait(ReadMutex);
+	               Wait(ReadCountMutex);
+	                    ReadCount++;
+	                    if (ReadCount == 1) 
+	                         Wait(WriteMutex);
+	               Signal(ReadCountMutex);
+	          Signal(ReadMutex);
+	     Signal(Block);
+	     ...............
+	}
+
+	</pre><b>
+
+	to the following?
+
+	</b><pre>
+
+	while {
+	     Wait(ReadMutex);
+	          Wait(ReadCountMutex);
+	               ReadCount++;
+	               if (ReadCount == 1) 
+	                    Wait(WriteMutex);
+	          Signal(ReadCountMutex);
+	     Signal(ReadMutex);
+
+	     ..... read the database .....
+
+	     Wait(ReadCountMutex);
+	          ReadCount--;
+	          if (ReadCount == 0)
+	               Signal(WriteMutex);
+	     Signal(ReadCountMutex);
+	}
+
+	</pre><b>
+
+	<a> answer
+
+	<q>Removing Block is the most natural suggestion, since it is used in the reader process and is used exactly once. Explain why you cannot do this. If Block is removed, what will happen to the solution.
+	<a> answer
