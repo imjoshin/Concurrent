@@ -447,31 +447,33 @@
 			<td></td>
 		</tr>
 		<tr>
-			<td>I</td>
+			<td>Load count</td>
 			<td></td>
+			<td>count is loaded as 0</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td>Wait() is called</td>
 			<td></td>
 		</tr>
 		<tr>
-			<td>Will</td>
 			<td></td>
-			<td></td>
+			<td>Load count</td>
+			<td>count is loaded as 0</td>
 		</tr>
 		<tr>
-			<td>Do</td>
 			<td></td>
-			<td></td>
+			<td>Decrement count</td>
+			<td>count is now -1 in Thread 2</td>
 		</tr>
 		<tr>
-			<td>This</td>
+			<td>Decrement count</td>
 			<td></td>
-			<td></td>
-		</tr>
-		<tr>
-			<td>Later</td>
-			<td></td>
-			<td></td>
+			<td>count is now -1 in Thread 1</td>
 		</tr>
 	</table>
+
+	Two threads executed Wait() when count was 0, count is now set to -1 when it should be -2.
 
 	<q>Show, by an execution sequence, that if the method Signal() is not atomic (but the method Wait() is) then mutual exclusion cannot be guaranteed by the use of a semaphore.
 	<a> 
@@ -487,36 +489,38 @@
 			<td>count is 0</td>
 		</tr>
 		<tr>
-			<td>Wait() is called</td>
+			<td>Signal() is called</td>
 			<td></td>
 			<td></td>
 		</tr>
 		<tr>
-			<td>I</td>
+			<td>Load count</td>
 			<td></td>
+			<td>count is loaded as 0</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td>Signal() is called</td>
 			<td></td>
 		</tr>
 		<tr>
-			<td>Will</td>
 			<td></td>
-			<td></td>
+			<td>Load count</td>
+			<td>count is loaded as 0</td>
 		</tr>
 		<tr>
-			<td>Do</td>
 			<td></td>
-			<td></td>
+			<td>Increment count</td>
+			<td>count is now 1 in Thread 2</td>
 		</tr>
 		<tr>
-			<td>This</td>
+			<td>Increment count</td>
 			<td></td>
-			<td></td>
-		</tr>
-		<tr>
-			<td>Later</td>
-			<td></td>
-			<td></td>
+			<td>count is now 1 in Thread 1</td>
 		</tr>
 	</table>
+
+	Two threads executed Signal() when count was 0, count is now set to 1 when it should be 2.
 
 	<q>Suppose we have three processes <i>P</i><sub>1</sub>, <i>P</i><sub>2</sub> and <i>P</i><sub>3</sub> and process <i>P</i><sub>i</sub> only prints the value of <i>i</i> as follows:
 	</b>
@@ -544,32 +548,155 @@
 	</pre>
 	<b>
 	Add semaphores and cout if necessary to the above processes so that the three processes will print out the following sequence 1 2 3 2 1 2 3 2 1 2 3 2 1 ...
-	<a> answer
+	<a>
+
+	<pre>
+	Semaphore s = 1;
+
+	Process 1
+	while(1) {
+		...
+		s.wait();
+		cout << "1 2 3 2 ";
+		s.signal();
+		...
+	}
+
+	Process 2
+	while(1) {
+		...
+		s.wait();
+		cout << "1 2 3 2 ";
+		s.signal();
+		...
+	}
+
+	Process 3
+	while(1) {
+		...
+		s.wait();
+		cout << "1 2 3 2 ";
+		s.signal();
+		...
+	}
+	</pre>
+
+
 
 	<q>Modify the above template so that it will print out the following sequence 1 2 3 1 2 3 1 2 3 1 2 3 ...
-	<a> answer
+	<a>
+
+	<pre>
+	Semaphore s = 1;
+
+	Process 1
+	while(1) {
+		...
+		s.wait();
+		cout << "1 2 3 ";
+		s.signal();
+		...
+	}
+
+	Process 2
+	while(1) {
+		...
+		s.wait();
+		cout << "1 2 3 ";
+		s.signal();
+		...
+	}
+
+	Process 3
+	while(1) {
+		...
+		s.wait();
+		cout << "1 2 3 ";
+		s.signal();
+		...
+	}
+	</pre>
 
 	<q>We know that a semaphore with an appropriate initial value can guarantee mutual exclusion. Does the semaphore solution satisfy the progress condition and the bounded waiting condition? Use execution sequences to answer this question.
-	<a> answer
+	<a> 
+	<table style="width:500px">
+		<tr>
+			<th style="width:150px">Thread 1</th>
+			<th style="width:150px">Thread 2</th>
+			<th style="width:200px">Comment</th>
+		</tr>
+		<tr>
+			<td>stuff</td>
+			<td>stuff</td>
+			<td>count is 1</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+	</table>
 
 	<q>Use the Test-and-Set instruction to implement semaphore wait and semaphore signal.
-	<a> answer
+	<a> 
+	<pre>
+	wait(){
+		S.count--;
+		if(S.count < 0) {
+			while(TS(&bool)); //if bool == false, set bool to true and return false
+		}
+	}
+
+	signal(){
+		S.count++;
+		if(S.count <= 0){
+			bool = false;
+		}
+	}
+	</pre>
 
 	<q>It was shown in class that deadlocks can occur in the naive solution to the dining philosophers problem. We also showed that to avoid deadlocks from happening a righty philosopher may be introduced or add a restriction that at most four philosophers may sit down and eat. Do the following problems:
 	</b>
+	<a> 
 	<ul>
 		<li>
-			Rigorously prove that the righty solution does not cause any deadlock.
+			<b>Rigorously prove that the righty solution does not cause any deadlock.</b><br>
+			In the righty solution, it is impossible for all 5 philosophers to have a single chopstick. When the 5 philosophers first sit down, 4 of the 5 will reach for his/her left chopstick. In this proof, Philosopher #5 will reach for his/her right chopstick. Two possibilities are presented: Philosopher #4 will beat #5 to their shared chopstick, or #5 will pick up his right chopstick and beat #1 to their shared chopstick. In the first case, #4 will have both of his/her chopsticks, in which #3 and #5 would be waiting. In the second case, #5 will have both of his/her chopstick, in which #1 and #4 would be waiting. Once the philosopher with both chopsticks is finished eating, the others would pick up those two chopsticks and the cycle would continue as such.
 		</li>
 		<li>
-			Rigorously prove that the four-chair solution does not cause any deadlocks.
+			<b>Rigorously prove that the four-chair solution does not cause any deadlocks.</b>
+			
 		</li>
 		<li>
-			Show, with execution sequences, that the naive, righty and four-chair solutions can have starvation. More precisely, use execution sequences to show that there are philosophers who are hungry and have no chance to eat.
+			<b>Show, with execution sequences, that the naive, righty and four-chair solutions can have starvation. More precisely, use execution sequences to show that there are philosophers who are hungry and have no chance to eat.</b>
 		</li>
 	</ul><b>
 
-	<a> answer
 
 
 	<q>It was suggested that to avoid possible deadlocks in the philosophers problem one may add more resources which should be arranged in a different way. The following shows some attempts:
