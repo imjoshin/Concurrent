@@ -41,9 +41,9 @@
 
 		$("#exam2").on("click", function(){
 			var minus = "fa-minus-square-o"; var plus = "fa-plus-square-o";
-			var fa = $("h1[data-num='" + $(this).data("num") + "']").find(".fa");
 			$('.week').each(function(){
-				if(parseInt($(this).data('num')) <= 6){	
+				var fa = $("h1[data-num='" + $(this).data("num") + "']").find(".fa");
+				if(parseInt($(this).data('num')) <= 6 || parseInt($(this).data('num')) >= 11){	
 					$(this).slideUp(300);
 					fa.removeClass(minus).addClass(plus);
 				}
@@ -56,8 +56,8 @@
 
 		$("#exam1").on("click", function(){
 			var minus = "fa-minus-square-o"; var plus = "fa-plus-square-o";
-			var fa = $("h1[data-num='" + $(this).data("num") + "']").find(".fa");
 			$('.week').each(function(){
+				var fa = $("h1[data-num='" + $(this).data("num") + "']").find(".fa");
 				if(parseInt($(this).data('num')) >= 7){	
 					$(this).slideUp(300);
 					fa.removeClass(minus).addClass(plus);

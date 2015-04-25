@@ -689,8 +689,8 @@
 			In the righty solution, it is impossible for all 5 philosophers to have a single chopstick. When the 5 philosophers first sit down, 4 of the 5 will reach for his/her left chopstick. In this proof, Philosopher #5 will reach for his/her right chopstick. Two possibilities are presented: Philosopher #4 will beat #5 to their shared chopstick, or #5 will pick up his right chopstick and beat #1 to their shared chopstick. In the first case, #4 will have both of his/her chopsticks, in which #3 and #5 would be waiting. In the second case, #5 will have both of his/her chopstick, in which #1 and #4 would be waiting. Once the philosopher with both chopsticks is finished eating, the others would pick up those two chopsticks and the cycle would continue as such.
 		</li>
 		<li>
-			<b>Rigorously prove that the four-chair solution does not cause any deadlocks.</b>
-			
+			<b>Rigorously prove that the four-chair solution does not cause any deadlocks.</b><br>
+			If only 4 of the 5 chairs are taken, deadlock cannot occur. This is because there is one open chair, and the right-most philosopher is able to pick up both chopsticks.
 		</li>
 		<li>
 			<b>Show, with execution sequences, that the naive, righty and four-chair solutions can have starvation. More precisely, use execution sequences to show that there are philosophers who are hungry and have no chance to eat.</b>
@@ -700,7 +700,7 @@
 
 
 	<q>It was suggested that to avoid possible deadlocks in the philosophers problem one may add more resources which should be arranged in a different way. The following shows some attempts:
-	</b>	<ul>
+	</b><ul>
 			<li>
 				Add a single chopstick at the center of the table. A philosopher picks up his left chopstick and then competes to grab the chopstick at the center. If he can get both, then he eats.
 				<ul>
@@ -719,7 +719,6 @@
 				Instead of having the chopsticks arranged as discussed in class, we make all five chopsticks in a tray next to the table so that any philosopher can pick any chopstick. In this attempt, each philosopher picks up his first chopstick, and, then picks the second. Is deadlock possible? How about parallelism?
 			</li>
 		</ul>
-	<b>
 	<a> answer
 
 
@@ -727,32 +726,32 @@
 	 The following solution, due to Morris (1979), uses three semaphores. Semaphores FirstBarrier and SecondBarrier are used to setup two barriers, and semaphore Lock is used to protect counter FirstCount for mutual exclusion purpose. Two counters are used: FirstCount counts the number of processes ready to cross the first barrier represented by semaphore FirstBarrier, and SecondCount counts the number of processes having already crossed the first barrier but not barrier SecondBarrier.
 	</b><pre>
 	Semaphore:  	FirstBarrier    = 1,
-            		SecondBarrier   = 0,
-            		Lock            = 1;
+					SecondBarrier   = 0,
+					Lock            = 1;
 
 			int         FirstCount      = 0,
-            		SecondCount     = 0;
+					SecondCount     = 0;
 	</pre><b>
 	The following shows the enter and exit protocol:
 	</b><pre>
 	// Enter Protocol
 
 	Wait(Lock);                                 // I am ready and prepared to cross the 1st barrier
-    		FirstCount++;                       // increase the counter
+			FirstCount++;                       // increase the counter
 	Signal(Lock);
 
 	Wait(FirstBarrier);                         // wait on the 1st barrier
-     		SecondCount++;                      // I have successfully crossed the 1st barrier
-     		Wait(Lock);                         // Have to lock the counter to decrease
-          	FirstCount--;                       // Now I am about to cross the 2nd barrier
-          	if (FirstCount == 0) {              // if I was the only one crossing the 1st barrier
-               		Signal(Lock);               //     then release the lock
-               		Signal(SecondBarrier);      //     and signal the 2nd barrier so that I could cross
-         	}
-          	else {                              // if I am not the only one, I have to wait; but
-               		Signal(Lock);               //     I have to release the lock, and
-               		Signal(FirstBarrier);       //     also open the 1st barrier
-          	}
+			SecondCount++;                      // I have successfully crossed the 1st barrier
+			Wait(Lock);                         // Have to lock the counter to decrease
+			FirstCount--;                       // Now I am about to cross the 2nd barrier
+			if (FirstCount == 0) {              // if I was the only one crossing the 1st barrier
+					Signal(Lock);               //     then release the lock
+					Signal(SecondBarrier);      //     and signal the 2nd barrier so that I could cross
+			}
+			else {                              // if I am not the only one, I have to wait; but
+					Signal(Lock);               //     I have to release the lock, and
+					Signal(FirstBarrier);       //     also open the 1st barrier
+			}
 	Wait(SecondBarrier);                        // wait on the second barrier
 	SecondCount--;                              // I am no more waiting to cross the 2nd barrier
 
@@ -761,15 +760,14 @@
 // Exit protocol
 
 	if (SecondCount == 0)                       // if there is no one wait on the 2nd barrier
-     		Signal(FirstBarrier);               //     open the 1st barrier
+			Signal(FirstBarrier);               //     open the 1st barrier
 	else					    // otherwise,
-     		Signal(SecondBarrier);              //     open the 2nd barrier
+			Signal(SecondBarrier);              //     open the 2nd barrier
 
 	</pre>
 	<b>Try to understand the above protocol, and convince yourself that mutual exclusion and bounded-waiting are satisfied. How about the progress condition?
 
 	<a> answer
-
 
 
 
@@ -872,11 +870,11 @@
 	</b><pre>
 
 	while {
-	     Wait(WriterOnly);     // wait on our own semaphore
-	          Wait(WrtMutex);  // then, compete with the only possible reader
-	                           // writing
-	          Signal(WrtMutex);
-	     Signal(WriterOnly);
+		 Wait(WriterOnly);     // wait on our own semaphore
+			  Wait(WrtMutex);  // then, compete with the only possible reader
+							   // writing
+			  Signal(WrtMutex);
+		 Signal(WriterOnly);
 	}
 
 	</pre><b>
@@ -902,26 +900,26 @@
 	</b><pre>
 
 	while (1) {
-	     Wait(Mutex);                           // the enter part
-	     if (ActiveWriters + ActiveReaders == 0) {  // no one is reading and writing
-	          Signal(OKtoWrite);
-	          ActiveReaders++;                  // I am in
-	     }
-	     else 
-	          WaitingReaders++;                 // otherwise, I must wait
-	     Signal(Mutex);                         // release the counter lock
+		 Wait(Mutex);                           // the enter part
+		 if (ActiveWriters + ActiveReaders == 0) {  // no one is reading and writing
+			  Signal(OKtoWrite);
+			  ActiveReaders++;                  // I am in
+		 }
+		 else 
+			  WaitingReaders++;                 // otherwise, I must wait
+		 Signal(Mutex);                         // release the counter lock
 
-	     Wait(OKtoRead);                        // wait to get the read permission
-	                                            // read data
+		 Wait(OKtoRead);                        // wait to get the read permission
+												// read data
 
-	     Wait(Mutex);                           // the exit part
-	     ActiveReaders--;                       // I am done reading
-	     if (ActiveReaders == 0 && WaitingWriters > 0) {
-	          Signal(OKtoWrite);                // allow writing of no reader and some writers
-	          ActiveWriters++;                  // we have an active writer
-	          WaitingWriters--;                 //    and one less waiting writers
-	     }
-	     Signal(Mutex);                         // release the counter
+		 Wait(Mutex);                           // the exit part
+		 ActiveReaders--;                       // I am done reading
+		 if (ActiveReaders == 0 && WaitingWriters > 0) {
+			  Signal(OKtoWrite);                // allow writing of no reader and some writers
+			  ActiveWriters++;                  // we have an active writer
+			  WaitingWriters--;                 //    and one less waiting writers
+		 }
+		 Signal(Mutex);                         // release the counter
 	}
 
 	</pre><b>
@@ -930,32 +928,32 @@
 	</b><pre>
 
 	while (1) {
-	     Wait(Mutex);                           // the enter part
-	     if (ActiveWriters + ActiveReaders + WaitingWriters == 0) {  
-	                                            // no one is reading, writing and waiting
-	          Signal(OKtoWrite);
-	          ActiveWriters++;                  // I (writer) am in
-	     }
-	     else 
-	          WaitingWriters++;                 // otherwise, I must wait
-	     Signal(Mutex);                         // release the counter lock
+		 Wait(Mutex);                           // the enter part
+		 if (ActiveWriters + ActiveReaders + WaitingWriters == 0) {  
+												// no one is reading, writing and waiting
+			  Signal(OKtoWrite);
+			  ActiveWriters++;                  // I (writer) am in
+		 }
+		 else 
+			  WaitingWriters++;                 // otherwise, I must wait
+		 Signal(Mutex);                         // release the counter lock
 
-	     Wait(OKtoWrite);                       // wait to get the read permission
-	                                            // write data
+		 Wait(OKtoWrite);                       // wait to get the read permission
+												// write data
 
-	     Wait(Mutex);                           // the exit part
-	     ActiveWriters--;                       // I am done writing
-	     if (WaitingWriters > 0) {              // if there are writers waiting
-	          Signal(OKtoWrite);                // allow writing of no reader and some writers
-	          ActiveWriters++;                  // we have an active writer
-	          WaitingWriters--;                 //    and one less waiting writers
-	     }
-	     else {
-	          while (WaitingReaders > 0) {      // if there are waiting readers
-	             Signal(OKtoRead);              //    let them read one-by-one
-	             ActiveReaders++;
-	             WaitingReaders--;
-	     Signal(Mutex);                         // release the counter
+		 Wait(Mutex);                           // the exit part
+		 ActiveWriters--;                       // I am done writing
+		 if (WaitingWriters > 0) {              // if there are writers waiting
+			  Signal(OKtoWrite);                // allow writing of no reader and some writers
+			  ActiveWriters++;                  // we have an active writer
+			  WaitingWriters--;                 //    and one less waiting writers
+		 }
+		 else {
+			  while (WaitingReaders > 0) {      // if there are waiting readers
+				 Signal(OKtoRead);              //    let them read one-by-one
+				 ActiveReaders++;
+				 WaitingReaders--;
+		 Signal(Mutex);                         // release the counter
 	}
 
 	</pre><b>
@@ -970,35 +968,35 @@
 	</b><pre>
 
 	Semaphore:  Block           = 1,
-            ReadMutex       = 1,
-            ReadCountMutex  = 1,
-            WriteMutex      = 1,
-            WriteCountMutex = 1;
+			ReadMutex       = 1,
+			ReadCountMutex  = 1,
+			WriteMutex      = 1,
+			WriteCountMutex = 1;
 
-    </pre><b>
+	</pre><b>
 
-    A reader process has the following form:
+	A reader process has the following form:
 
-    </b><pre>
+	</b><pre>
 
-    while {
-	     Wait(Block);
-	          Wait(ReadMutex);
-	               Wait(ReadCountMutex);
-	                    ReadCount++;
-	                    if (ReadCount == 1) 
-	                         Wait(WriteMutex);
-	               Signal(ReadCountMutex);
-	          Signal(ReadMutex);
-	     Signal(Block);
+	while {
+		 Wait(Block);
+			  Wait(ReadMutex);
+				   Wait(ReadCountMutex);
+						ReadCount++;
+						if (ReadCount == 1) 
+							 Wait(WriteMutex);
+				   Signal(ReadCountMutex);
+			  Signal(ReadMutex);
+		 Signal(Block);
 
-	     ..... read the database .....
+		 ..... read the database .....
 
-	     Wait(ReadCountMutex);
-	          ReadCount--;
-	          if (ReadCount == 0)
-	               Signal(WriteMutex);
-	     Signal(ReadCountMutex);
+		 Wait(ReadCountMutex);
+			  ReadCount--;
+			  if (ReadCount == 0)
+				   Signal(WriteMutex);
+		 Signal(ReadCountMutex);
 	}
 
 	</pre><b>
@@ -1008,21 +1006,21 @@
 	</b><pre>
 
 	while {
-	     Wait(WriteCountMutex);
-	          WriteCount++;
-	          if (WriteCount == 1)
-	               Wait(ReadMutex);
-	     Signal(WriteCountMutex);
-	     Wait(WriteMutex);
+		 Wait(WriteCountMutex);
+			  WriteCount++;
+			  if (WriteCount == 1)
+				   Wait(ReadMutex);
+		 Signal(WriteCountMutex);
+		 Wait(WriteMutex);
 
-	     ..... write the database .....
+		 ..... write the database .....
 
-	     Signal(WriteMutex);
-	     Wait(WriteCountMutex);
-	          WriteCount--;
-	          if (WriteCount == 0)
-	               Signal(ReadMutex);
-	     Signal(WriteCountMutex);
+		 Signal(WriteMutex);
+		 Wait(WriteCountMutex);
+			  WriteCount--;
+			  if (WriteCount == 0)
+				   Signal(ReadMutex);
+		 Signal(WriteCountMutex);
 	}
 
 	</pre><b>
@@ -1044,16 +1042,16 @@
 	</b><pre>
 
 	while {
-	     Wait(Block);
-	          Wait(ReadMutex);
-	               Wait(ReadCountMutex);
-	                    ReadCount++;
-	                    if (ReadCount == 1) 
-	                         Wait(WriteMutex);
-	               Signal(ReadCountMutex);
-	          Signal(ReadMutex);
-	     Signal(Block);
-	     ...............
+		 Wait(Block);
+			  Wait(ReadMutex);
+				   Wait(ReadCountMutex);
+						ReadCount++;
+						if (ReadCount == 1) 
+							 Wait(WriteMutex);
+				   Signal(ReadCountMutex);
+			  Signal(ReadMutex);
+		 Signal(Block);
+		 ...............
 	}
 
 	</pre><b>
@@ -1063,21 +1061,21 @@
 	</b><pre>
 
 	while {
-	     Wait(ReadMutex);
-	          Wait(ReadCountMutex);
-	               ReadCount++;
-	               if (ReadCount == 1) 
-	                    Wait(WriteMutex);
-	          Signal(ReadCountMutex);
-	     Signal(ReadMutex);
+		 Wait(ReadMutex);
+			  Wait(ReadCountMutex);
+				   ReadCount++;
+				   if (ReadCount == 1) 
+						Wait(WriteMutex);
+			  Signal(ReadCountMutex);
+		 Signal(ReadMutex);
 
-	     ..... read the database .....
+		 ..... read the database .....
 
-	     Wait(ReadCountMutex);
-	          ReadCount--;
-	          if (ReadCount == 0)
-	               Signal(WriteMutex);
-	     Signal(ReadCountMutex);
+		 Wait(ReadCountMutex);
+			  ReadCount--;
+			  if (ReadCount == 0)
+				   Signal(WriteMutex);
+		 Signal(ReadCountMutex);
 	}
 
 	</pre><b>
@@ -1086,3 +1084,316 @@
 
 	<q>Removing Block is the most natural suggestion, since it is used in the reader process and is used exactly once. Explain why you cannot do this. If Block is removed, what will happen to the solution.
 	<a> answer
+
+
+
+<w>
+	<q>08-Semaphores.pdf
+	<q>09-Race-Conditions.pdf
+
+	<q>A restaurant has n tables, each of which can only sit one customer, and has the following rules.
+	<ul>
+		<li>The restaurant is empty initially (i.e., no waiting and eating customers).</li>
+		<li>When a customer arrives, if there is a free table, he could sit down and order food.</li>
+		<li>When a customer arrives, if all tables are occupied, he must wait until all n customers finish eating and leave.</li>
+		<li>After finishing his food, a customer leaves.</li>
+	</ul>
+	Design a customer thread with semaphores to simulate this activity.
+
+	<a><pre>
+
+		int Waiting = Eating = 0; 			// counting waiting and eating customers
+		int i, k; 					// working variables
+		Bool Must_Wait = FALSE; 			// variable indicating if a newcomer must wait
+		Semaphore Mutex = 1; 				// lock for protecting Waiting, Eating and Must_Wait
+		Semaphore Table = 0; 				// block customers
+
+
+		// A customer thread
+		Mutex.Wait();					// newcomer must lock the variables
+		if (Must_Wait) { 				// there are waiting customers or no table is available?
+			Waiting++; 				// must wait and increase Waiting
+			Mutex.Signal(); 			// release the lock before waiting
+			Table.Wait(); 				// and join the waiting line
+		}
+		else { 						// no waiting customers and a table available
+		Eating++; 					// this customer can have a table
+		if (Eating == n) 				// if he is the last one who gets a table
+			Must_Wait = TRUE; 			// he must set Must_Wait to TRUE
+			Mutex.Signal(); 			// release the lock and go eat
+		}
+
+
+		// This customer has a table and easts
+		Mutex.Wait(); 					// finish eating and lock variables
+		Eating--; 					// decrease Eating
+
+		if (Eating == 0) { 				// if this is the last customer
+			k = (Waiting <= n) ? Waiting : n;	// allow no more than n to go
+			Waiting -= k; 				// release k waiting customers
+			Eating += k; 				// they can have tables
+			Must_Wait = (k == n) 			// if this is a full count, newcomers must wait
+			for (i = 1; i <= k; i++) 		// release those k waiting customers
+				Table.Signal();
+		}
+
+		Mutex.Signal(); 				// unlock variables
+	</pre>
+
+
+	<q>As you know MTU does not have many female students. To restrict the number of male party goers, a fraternity party made an odd rule to maintain the number of male and female students in its party. This rule states that a female student must be accompanied by two male students to enter the party room. Write a thread to simulate male students and another thread to simulate female students using semaphores so that this 2-1 relation is maintained. Can you extend your solution to 3-1 and even n-1?
+
+	<a>Answer
+
+
+	<q>The above rule has a loop hole, because a student could sneak out of the party room and get more students in. As a result, the 2-1 ratio cannot be maintained. To close this gap, let us make the rule a bit more strict. A 2-1 triple must form to enter and exit the party. In other word, once two male students and one female student form a triple to enter the party room, they must also form a 2-1 triple in order to leave the party before reentering the party again. Of course, the exit 2-1 triple may not be the same as the enter 2-1 triple. For example, John, Jason and Mary form an enter 2-1 triple; but, John, Mike and Jane could form an exit triple. In this way, the 2-1 rule is maintained. Will your solution be different from the previous one? (Hint: the bounded-buffer problem may help, again.)
+
+	<a>Answer
+
+
+
+
+<w>
+
+	<q>10-Monitors.pdf
+
+	<q>Find some web sites or tutorials to learn Unix System V semaphores. More specifically, learn how to get a semaphore set with semget(), change the permissions, set initialize values, etc of a semaphore set with semctl(), and perform operations on a semaphore set with semop(). Note that there is no Wiat() and Signal(), since these two functions are integrated into the single function semop(). You will see that the use of Unix semaphores is more complex than what we have learned so far. POSIX semaphores are similar with some differences.<a>
+
+	<q>Many may have the tendency to return the value of a private variable of a monitor and test it to determine what the next step should be. For example, return the internal counter of a monitor and do something if the returned value is positive. The point is that doing this test outside of a monitor will be more efficient then doing it inside of a monitor because of less locking and unlocking (of the monitor). Whys is this usually not a wise move?
+
+	<a>Answer
+
+
+	<q>Why is calling a monitor procedure in another monitor from within a monitor not a good idea? Explain this with a convincing argument.
+
+	<a>Answer
+
+
+	<q>Why is the use of a semaphore in a monitor prohibited? Explain this with a convincing argument. Just saying that we use condition variable in a monitor is not a convincing argument. There is a much stronger reason.
+
+	<a>Answer
+
+
+	<q>There are commonly two ways of releasing threads from a condition variable. More precisely, the first method is the use of a for as follows:
+	<pre>
+		for (i = 0; i < n; i++)
+		CV.Signal();
+	</pre>
+
+	This method uses a single thread, which is executing in a monitor, to release threads waiting on condition variable CV, where n is sufficiently large so that all blocked threads are released.
+	The second method just releases one thread, and allows the released thread to release other threads. This is referred to as cascading signals.
+
+	<pre>
+		// place where threads block
+		CV.Wait();
+		CV.Signal();  // this one is released and release the next one
+
+		// other work in a monitor
+
+		CV.Signal();  // initialize a cascading release here
+	</pre>
+
+	Analyze and compare these methods under Hoare type and Mesa type monitors.
+
+	<a>Answer
+
+
+	<q>A barrier is synchronization primitive with a positive initialization value n and a method Barrier_Wait(). When a thread calls Barrier_Wait(), if it is not the n-th thread, it blocks in the barrier. When the n-th thread comes, this "last" thread releases all n-1 threads blocked in the barrier, and, as a result, all n threads, the n-th thread included, continues. Design a barrier monitor of Hoare type and method Barrier_Wait(). Which release method discussed above would you want to use? Again, analyze and compare both methods under Hoare type and Mesa type monitors. Note that before all n-1 blocked threads have been successfully released, your barrier should not allow new threads to join this activity and get "released" as part of the current batch. In other words, threads that come while the blocked threads are being released must be handled in the next batch. What would you do if the monitor is a Mesa type?
+
+	<a>
+
+
+	<q>Do the Roller-Coaster problem discussed on the class note using a Hoare monitor.
+
+	<a>Answer
+
+
+	<q>We discussed in class a solution to the philosophers problem in which each philosopher has three states: THINKING, HUNGRY and EATING. We solved this problem using a monitor. Re-do this problem using only semaphores.
+
+	<a>Answer
+
+
+	<q>Although monitors are more structured than semaphores, deadlocks may still occur if monitors are not designed carefully. Consider the following monitor of Hoare type
+	<pre>
+		monitor  deadlock
+			condition  p, q;
+
+			void  stop(void)
+			{
+				p.wait;
+				......
+				q.signal;
+			}
+
+			void  go(void);
+			{
+				......
+				p.signal;
+				q.wait;	 
+			}
+			// no initialization is required
+		}
+	</pre>
+	Suppose we have processes P1 and P2 as follows:
+	<pre>
+		P1:    repeat ..... deadlock.stop; ..... until false;
+		P2:    repeat ..... deadlock.go;   ..... until false;
+	</pre>
+
+	The intention of this monitor is that P1 is required to wait on condition p until P2 has completed some task, at which point it calls deadlock.go to release P1. P2 then waits until P1 has performed its task, when it signals condition q to indicate that P2 may continue.
+	This program looks correct and seems can perform the indicated task. But, it has the potential to deadlock. Find this deadlock. Would the deadlock still be there is the monitor is a Mesa type?
+
+	<a>
+
+
+
+<w>
+
+	<q>10-Monitors.pdf
+	<q>11-Deadlock.pdf
+
+	<q>Why is nested monitor calls (i.e., calling a monitor procedure from within a monitor) not a good practice?
+
+	<a>Answer
+
+
+	<q>Why is it a bad idea to use a semaphore in a monitor?
+
+	<a>Answer
+
+
+	<q>Design a monitor that manages a shared resource which must be accessed in a mutual exclusive way. This monitor has two methods: acquire() and release(). Before using this shared resource, a thread must call acquire(). If the resource is being used by another thread, the monitor blocks the calling thread. Otherwise, the calling thread has the permission to use. After using this shared resources, a thread calls release() so that another thread can use.
+
+	<a>Answer
+
+
+	<q>Design a barrier monitor with a Barrier_Wait() method. In last week's reading, we mentioned the cascading signals technique. If you use the Hoare type for this monitor, what is the safe way in releasing all blocked thread? Is the cascading signals more reliable? What if your monitor is of the Mesa type, would cascading signals make a difference?
+
+	<a>Answer
+
+
+	<q>Implement a semaphore using a monitor.
+
+	<a>Answer
+
+
+	<q>Recall the smokers problem discussed in class. Suppose one semaphore is used to control the table, and a semaphore is assigned to each ingredient. In this way, the agent will pick two ingredients on the table and signal the corresponding semaphores:
+	<pre>
+		Agent
+		-----
+
+		while (1) {
+			pick two ingredients, say i and j
+			signal semaphore i;
+			signal semaphore j;
+			wait until the table is cleared;
+		}
+	</pre>
+	The smoker who has ingredient k and needs ingredients i and j to make a cigarette does the following:
+	<pre>
+		Smoker who has ingredient k
+		---------------------------
+
+		while (1) {
+			wait on semaphore i;
+			wait on semaphore j;
+			signal semaphore table;
+			make a cigarette;
+		}
+	</pre>
+
+	Is this solution to the smokers problem deadlock free? If it is not deadlock free, show an execution sequence. Otherwise, prove rigorously that this solution is deadlock free.
+
+	<a>Answer
+
+
+	<q>Suppose all chopstick are placed at the center of the table, and any two of them can be used by a philosopher. Assume that requests for chopsticks are made one at a time. Design a simple rule for determining whether a particular request can be satisfied without causing deadlock given the current allocation of chopsticks to philosophers.
+
+	<a>Answer
+
+
+	<q>In the semaphore and monitor solutions to the Readers-Writers problem, a common semaphore or condition variable are used to block BOTH readers and writers. As a result, when that semaphore/condition variable is signaled, a reader or writer could be released, and there is no rule to guarantee the released process/thread is of a particular kind. We may resolve this situation with four counters: the first one counts the number of active readers, the second one counts the number of waiting readers, the third one counts the number of active writers which should be no more than 1, and the fourth one counts the number of waiting writers. Use this scheme to solve the reader-priority version with semaphores. Do the same using a monitor.
+
+	<a>Answer
+
+
+	<q>Implementing a semaphore with a monitor is an easy task. See a previous problem. How can we implement a monitor with semaphores?
+	<br><br>
+	Since we need mutually exclusive monitor boundary, we need a Mutex, with initial value 1, for each monitor. A process must execute Mutex.Wait() before entering the monitor and must execute Mutex.Signal() after leaving the monitor. This is exactly what MonitorBegin() and MonitorEnd() are doing in ThreadMentor.
+	<br><br>
+	Since a signaling process must wait until the resumed process either leaves the monitor or waits on a condition variable, we need a semaphore Next, with initial value 0, to block the suspended processes. A signaling process can use Next to block itself. To keep a record of how many suspended processes are blocked by semaphore Next , we need a counter Next_Count. Therefore, in each public monitor procedure, its code looks like the following:
+
+	<pre>
+		Mutex.Wait();
+		// monitor procedure code
+		if (Next_Count > 0)	// there are suspended processes
+			Next.Signal();	// release one of them
+		else
+			Mutex.Signal();	// release an entering process
+	</pre>
+
+
+	Note that if there are suspended processes, this leaving process allows one of them to go but does not release the monitor. In this way, when the released process that was suspended before starts execution, it has the monitor. In other word, the leaving process passes the monitor to the released process.
+	<br><br>
+	To implement a condition variable CV, we need a semaphore for blocking processes CV_Sem and a variable for counting the number of waiting processes CV_Count. Both are initialized to 0.
+	<br><br>
+	Condition wait CV.Wait() is implement as follows:
+	<pre>
+		CV_Count++;           	// waiting is increased by 1
+		if (Next_Count > 0)   	// if there are suspended processes
+			Next.Signal();  //    release one of them to take the monitor
+		else                  	// otherwise,
+			Mutex.Signal(); //    release the monitor
+		CV_Sem.Wait();        	// block myself
+		CV_Count--;          	// if I am released, the number of wait is reduced by 1
+	</pre>
+
+	Study this implementation and make sure you understand it. Therefore, a monitor can be implemented using semaphores, and, of course, monitors and semaphores are equivalent.
+
+	Note that this implementation is for the Hoare type monitors. Can you modify it to implement the Mesa type monitors?
+
+	<a>Answer
+
+
+
+<w>
+
+	<q>12-Channels.pdf
+
+	<q>We mentioned in class that if resources are ordered in a hierarchical way so that thread acquire resources always follow this ordering, there is no deadlock. Prove this claim rigorously.
+
+	<a>Answer
+
+
+	<q>Consider a system consisting of four identical copies resources shared by three processes, each of which needs at most two resources. Prove rigorously that the system is deadlock free.
+
+	<a>Answer
+
+
+	<q>Play with ThreadMentor's channel visualization features and learn the meaning of the following:
+	<ul>
+		<li>The Channel button in the History Graph window.</li>
+		<li>The Channel menu button in the main window.</li>
+		<li>The meaning of tags CB, CA, CS and CR.</li>
+		<li>Study the two sample channel programs on ThreadMentor page.</li>
+	</ul>
+
+	<a>Answer
+
+
+	<q>We mentioned in class that for the shared memory model semaphores, monitors and channels are all equivalent to each other. In other word, each of these three can be implement by the other. You were also asked as an exercise previously to implement a semaphore using a monitor, and learned (in one of our reading lists) that semaphores can be used to implement a Hoare monitor. Now you should be able to do the following:
+	<ul>
+		<li>Implement a semaphore using channel(s).</li>
+		<li>Implement a synchronous channel using semaphores.</li>
+		<li>Implement an asynchronous with bounded capacity using semaphores.</li>
+	</ul>
+	Consequently, you learn the equivalence among these three commonly seen synchronization mechanisms.
+	<a>
+
+
+
+<w>
+
+	<q>13-Java-Threads.pdf
+	<q>14-Ada-Tasking.pdf
+	<q>15-Pthreads.pdf
