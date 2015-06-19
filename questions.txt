@@ -960,7 +960,11 @@
 
 	Study this solution and make sure you understand what it is trying to do. Is this a reader-priority or a writer-priority solution?
 
-	<a> answer
+	<a>
+	This solution is a writer-priority solution. Looking at the graph below, the <code>OktoRead</code> signal is only sent <b>after a writer</b> process executes.
+	Therefore, a reader cannot read until after a writer has written.
+	<i>Potential execution graph (may need work/may not be completely accurate)</i>
+	<img src="assets/img/sloppy.jpg" style="transform: rotate(90deg)"/>
 
 
 	<q>We discussed the reader-priority version of the readers/writers problem. Here is a solution to the writer-priority version of the readers/writers problem in which writers have higher priority. More precisely, as long as there is at least one writer has declared a desire to write, no new readers are allowed to read. Now, a reader process uses three semaphores Block, ReadMutex and ReadCountMutex, and a writer process uses two semaphores WriteMutex and WriteCountMutex:
@@ -1027,7 +1031,7 @@
 
 	The initial values of ReadCount and WriteCount are both 0. Please study this solution and answer the following questions:
 
-	<a>
+	<a> <img src="assets/img/writer-priority.jpg" style="transform: rotate(90deg)"/>
 
 	<q> 1. What is the purpose of using Wait(Block) and Wait(ReadMutex)? Before proceed to the next question, think again if your point is correct.
 	<a> answer
